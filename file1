@@ -1,0 +1,134 @@
+#include <stdio.h>
+
+int main() {
+int opcao, continuar = 1;
+char resposta;
+
+while (continuar) {
+// Menu de opções
+printf("\nSelecione a doença que você deseja verificar:\n");
+printf("1 - Dengue\n");
+printf("2 - Chikungunya\n");
+printf("3 - AIDS\n");
+printf("4 - Sífilis\n");
+printf("0 - Sair\n");
+scanf("%d", &opcao);
+
+switch (opcao) {
+  case 1:
+    // Dengue
+    printf("\n**Sintomas da Dengue:**\n");
+    printf("1 - Febre alta\n");
+    printf("2 - Dor de cabeça\n");
+    printf("3 - Dor muscular e articular\n");
+    printf("4 - Náuseas e vômitos\n");
+    printf("5 - Manchas vermelhas na pele\n");
+    printf("Responda 'S' para sim e 'N' para não para cada sintoma:\n");
+
+    int contDengue = 0;
+    for (int i = 1; i <= 5; i++) {
+      scanf(" %c", &resposta);
+      if (resposta == 'S') {
+        contDengue++;
+      }
+    }
+
+    if (contDengue >= 2) {
+      printf("\n**Você pode estar com Dengue. Consulte um médico!**\n");
+    } else {
+      printf("\n**É improvável que você esteja com Dengue.**\n");
+    }
+    break;
+
+  case 2:
+    // Chikungunya
+    printf("\n**Sintomas da Chikungunya:**\n");
+    printf("1 - Febre alta\n");
+    printf("2 - Dor nas articulações\n");
+    printf("3 - Dor muscular\n");
+    printf("4 - Dor de cabeça\n");
+    printf("5 - Náuseas e vômitos\n");
+    printf("Responda 'S' para sim e 'N' para não para cada sintoma:\n");
+
+    int contChikungunya = 0;
+    for (int i = 1; i <= 5; i++) {
+      scanf(" %c", &resposta);
+      if (resposta == 'S') {
+        contChikungunya++;
+      }
+    }
+
+    if (contChikungunya >= 2) {
+      printf("\n**Você pode estar com Chikungunya. Consulte um médico!**\n");
+    } else {
+      printf("\n**É improvável que você esteja com Chikungunya.**\n");
+    }
+    break;
+
+  case 3:
+    // AIDS
+    printf("\n**Sintomas da AIDS:**\n");
+    printf("1 - Febre persistente\n");
+    printf("2 - Fadiga crônica\n");
+    printf("3 - Perda de peso\n");
+    printf("4 - Suor noturno\n");
+    printf("5 - Ínguas linfáticas\n");
+    printf("Responda 'S' para sim e 'N' para não para cada sintoma:\n");
+
+    int contAIDS = 0;
+    for (int i = 1; i <= 5; i++) {
+      scanf(" %c", &resposta);
+      if (resposta == 'S') {
+        contAIDS++;
+      }
+    }
+
+    if (contAIDS >= 2) {
+      printf("\n**Você pode estar com AIDS. Consulte um médico!**\n");
+    } else {
+      printf("\n**É improvável que você esteja com AIDS.**\n");
+    }
+    break;
+
+  case 4:
+    // Sífilis
+    printf("\n**Sintomas da Sífilis:**\n");
+    printf("1 - Ferida indolor no local da infecção (cancro duro)\n");
+    printf("2 - Erupção cutânea\n");
+    printf("3 - Fadiga\n");
+    printf("4 - Dor de cabeça\n");
+    printf("5 - Perda de peso\n");
+    printf("Responda 'S' para sim e 'N' para não para cada sintoma:\n");
+
+    int contSifilis = 0;
+    for (int i = 1; i <= 5; i++) {
+      scanf(" %c", &resposta);
+      if (resposta == 'S') {
+        contSifilis++;
+      }
+    }
+
+    if (contSifilis >= 2) {
+      printf("\n**Você pode estar com Sífilis. Consulte um médico!**\n");
+    } else {
+      printf("\n**É improvável que você esteja com Sífilis.**\n");
+    }
+    break;
+
+  case 0:
+    continuar = 0;
+    printf("\n**Saindo do programa.**\n");
+    break;
+
+  default:
+    printf("\n**Opção inválida. Tente novamente.**\n");
+}
+
+// Perguntar se deseja continuar
+printf("\nDeseja verificar outra doença? (S/N): ");
+scanf(" %c", &resposta);
+continuar = (resposta == 'S');
+}
+
+return 0;
+}
