@@ -1,0 +1,27 @@
+#include <windows.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+
+void cursorNaPosicao(int x, int y);
+
+{
+HANDLE hStdout;
+COORD position;
+
+hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+position.X = x;
+position.Y = y;
+
+SetConsoleCursorPosition (hStdout, position);
+
+}
+
+
+int main()
+{
+    
+    cursorNaPosicao(0,5);
+    printf(".");
+    
+}
