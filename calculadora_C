@@ -1,0 +1,58 @@
+#include <stdio.h>
+
+int main(void) {
+  int escolha;
+  float resultado;
+  char continuar;
+
+  do {
+    float numero;
+    resultado = 0; // Reinicia o resultado para cada novo cálculo
+
+    printf("Calculadora Simples\n 1.Soma\n 2.Subtração\n 3.Multiplicação\n 4.Divisão\n\n Escolha a operação: ");
+    scanf("%d", &escolha);
+
+    printf("Digite o primeiro número: ");
+    scanf("%f", &resultado); // Primeiro número
+
+    while (1) {
+      printf("Digite o próximo número (ou digite 0 para encerrar): ");
+      scanf("%f", &numero);
+
+      if (numero == 0) // Se o usuário digitar 0, encerra a entrada de números
+        break;
+
+      switch (escolha) {
+        case 1:
+          resultado += numero; // Soma
+          break;
+        case 2:
+          resultado -= numero; // Subtração
+          break;
+        case 3:
+          resultado *= numero; // Multiplicação
+          break;
+        case 4:
+          if (numero != 0) {
+            resultado /= numero; // Divisão
+          } else {
+            printf("Erro: Divisão por zero!\n");
+            return 1; // Retorna 1 para indicar erro
+          }
+          break;
+        default:
+          printf("Opção inválida!\n");
+          return 1; // Retorna 1 para indicar erro
+      }
+    }
+
+    printf("O resultado da operação %d é: %.2f\n", escolha, resultado);
+
+    printf("Deseja fazer outra operação? (s/n): ");
+    scanf(" %c", &continuar); // Espaço antes de %c para consumir qualquer caractere em branco residual
+
+  } while (continuar == 's' || continuar == 'S');
+
+  return 0;
+  
+}
