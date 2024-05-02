@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 char board[3][3];
-
 
 void printBoard() {
     printf("\n");
@@ -19,7 +20,6 @@ void printBoard() {
             printf("  -----\n");
         }
     }
-   
     printf("\n");
 }
 
@@ -32,7 +32,6 @@ char checkWin() {
             return board[0][i];
         }
     }
-
     if (board[0][0] != ' ' && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
         return board[0][0];
     }
@@ -42,7 +41,57 @@ char checkWin() {
     return ' ';
 }
 
+// Verifica se a posição está vazia
+int isEmpty(int row, int col) {
+    return board[row][col] == ' ';
+}
+
+// Faz uma jogada aleatória
+void makeRandomMove(char player) {
+    int row, col;
+    do {
+        row = rand() % 3;
+        col = rand() % 3;
+    } while (!isEmpty(row, col));
+    board[row][col] = player;
+}
+
+// Verifica se uma jogada em (row, col) resulta em vitória para o player
+int isWinningMove(int row, int col, char player) {
+    char originalValue = board[row][col];
+    board[row][col] = player;
+    char winner = checkWin();
+    board[row][col] = originalValue;
+    return winner == player;
+}
+
+// Faz uma jogada inteligente
+void makeSmartMove(char player) {
+    // Tenta ganhar
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (isEmpty(i, j) && isWinningMove(i, j, player)) {
+                board[i][j] = player;
+                return;
+            }
+        }
+    }
+    // Tenta bloquear o oponente
+    char opponent = (player == 'X') ? 'O' : 'X';
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (isEmpty(i, j) && isWinningMove(i, j, opponent)) {
+                board[i][j] = player;
+                return;
+            }
+        }
+    }
+    // Se não for possível ganhar nem bloquear, joga aleatoriamente
+    makeRandomMove(player);
+}
+
 int main() {
+    srand(time(NULL)); // Inicializa a semente do gerador de números aleatórios
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -56,25 +105,29 @@ int main() {
 
     printf("Bem-vindo ao Jogo da Velha!\n");
 
-
     while (winner == ' ') {
-        printBoard();
-        printf("Jogador %c, é sua vez. Informe a linha (A-C) e coluna (1-3): ", currentPlayer);
-        char colChar;
-        scanf(" %c %d", &colChar, &row);
-        col = colChar - 'A';
-        row--; // Adjusting row to match array indexing
-
-        if (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == ' ') {
-            board[row][col] = currentPlayer;
-            winner = checkWin();
-            if (currentPlayer == 'X') {
-                currentPlayer = 'O';
+        if (currentPlayer == 'X') {
+            printBoard();
+            printf("Jogador %c, é sua vez. Informe a linha (A-C) e coluna (1-3): ", currentPlayer);
+            char colChar;
+            scanf(" %c %d", &colChar, &row);
+            col = colChar - 'A';
+            row--; // Ajusta a linha para corresponder à indexação do array
+            if (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == ' ') {
+                board[row][col] = currentPlayer;
+                winner = checkWin();
+                if (winner == ' ') {
+                    currentPlayer = 'O';
+                }
             } else {
-                currentPlayer = 'X';
+                printf("Jogada inválida. Tente novamente\n");
             }
         } else {
-            printf("Jogada inválida. Tente novamente\n");
+            makeSmartMove(currentPlayer);
+            winner = checkWin();
+            if (winner == ' ') {
+                currentPlayer = 'X';
+            }
         }
     }
 
