@@ -1,0 +1,128 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define TAMANHO 5
+#define NUM_NAVIOS 3
+
+typedef struct {
+    int x;
+    int y;
+} Coordenada;
+
+void inicializarTabuleiro(char tabuleiro[TAMANHO][TAMANHO]) {
+    for (int i = 0; i < TAMANHO; i++) {
+        for (int j = 0; j < TAMANHO; j++) {
+            tabuleiro[i][j] = '~'; // água
+        }
+    }
+}
+
+void imprimirTabuleiro(char tabuleiro[TAMANHO][TAMANHO], int mostrarNavios) {
+    printf("  ");
+    for (int i = 0; i < TAMANHO; i++) {
+        printf("%d ", i);
+    }
+    printf("\n");
+
+    for (int i = 0; i < TAMANHO; i++) {
+        printf("%d ", i);
+        for (int j = 0; j < TAMANHO; j++) {
+            if (tabuleiro[i][j] == 'N' && !mostrarNavios) {
+                printf("~ ");
+            } else {
+                printf("%c ", tabuleiro[i][j]);
+            }
+        }
+        printf("\n");
+    }
+}
+
+int ehPosicaoValida(char tabuleiro[TAMANHO][TAMANHO], Coordenada coord) {
+    if (coord.x < 0 || coord.x >= TAMANHO || coord.y < 0 || coord.y >= TAMANHO) {
+        return 0;
+    }
+    return tabuleiro[coord.x][coord.y] == '~';
+}
+
+void posicionarNavios(char tabuleiro[TAMANHO][TAMANHO]) {
+    int naviosPosicionados = 0;
+    while (naviosPosicionados < NUM_NAVIOS) {
+        Coordenada coord;
+        printf("Digite as coordenadas para posicionar o navio %d (linha coluna): ", naviosPosicionados + 1);
+        scanf("%d %d", &coord.x, &coord.y);
+        if (ehPosicaoValida(tabuleiro, coord)) {
+            tabuleiro[coord.x][coord.y] = 'N';
+            naviosPosicionados++;
+        } else {
+            printf("Posição inválida. Tente novamente.\n");
+        }
+    }
+}
+
+int realizarDisparo(char tabuleiro[TAMANHO][TAMANHO], Coordenada disparo) {
+    if (tabuleiro[disparo.x][disparo.y] == 'N') {
+        tabuleiro[disparo.x][disparo.y] = 'X';
+        return 1; // acerto
+    } else if (tabuleiro[disparo.x][disparo.y] == '~') {
+        tabuleiro[disparo.x][disparo.y] = 'O';
+        return 0; // erro
+    }
+    return -1; // já atirou aqui
+}
+
+int todosNaviosAfundados(char tabuleiro[TAMANHO][TAMANHO]) {
+    for (int i = 0; i < TAMANHO; i++) {
+        for (int j = 0; j < TAMANHO; j++) {
+            if (tabuleiro[i][j] == 'N') {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+void jogar() {
+    char tabuleiroJogador1[TAMANHO][TAMANHO];
+    char tabuleiroJogador2[TAMANHO][TAMANHO];
+    inicializarTabuleiro(tabuleiroJogador1);
+    inicializarTabuleiro(tabuleiroJogador2);
+
+    printf("Jogador 1, posicione seus navios:\n");
+    posicionarNavios(tabuleiroJogador1);
+    printf("Jogador 2, posicione seus navios:\n");
+    posicionarNavios(tabuleiroJogador2);
+
+    int jogadorAtual = 1;
+    while (1) {
+        char (*tabuleiroAtual)[TAMANHO] = jogadorAtual == 1 ? tabuleiroJogador2 : tabuleiroJogador1;
+        printf("Turno do Jogador %d:\n", jogadorAtual);
+        imprimirTabuleiro(tabuleiroAtual, 0);
+
+        Coordenada disparo;
+        printf("Digite as coordenadas para atirar (linha coluna): ");
+        scanf("%d %d", &disparo.x, &disparo.y);
+
+        int resultado = realizarDisparo(tabuleiroAtual, disparo);
+        if (resultado == 1) {
+            printf("Acertou!\n");
+        } else if (resultado == 0) {
+            printf("Errou.\n");
+        } else {
+            printf("Já atirou aqui. Tente novamente.\n");
+            continue;
+        }
+
+        if (todosNaviosAfundados(tabuleiroAtual)) {
+            printf("Jogador %d venceu!\n", jogadorAtual);
+            break;
+        }
+
+        jogadorAtual = jogadorAtual == 1 ? 2 : 1;
+    }
+}
+
+int main() {
+    jogar();
+    return 0;
+}
