@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define TAMANHO 5
-#define NUM_NAVIOS 3
+#define TAMANHO 6
+#define NAVIOS_1_CELULA 2
+#define NAVIOS_2_CELULAS 2
+#define NAVIOS_3_CELULAS 1
 
 typedef struct {
     int x;
@@ -38,24 +40,101 @@ void imprimirTabuleiro(char tabuleiro[TAMANHO][TAMANHO], int mostrarNavios) {
     }
 }
 
-int ehPosicaoValida(char tabuleiro[TAMANHO][TAMANHO], Coordenada coord) {
-    if (coord.x < 0 || coord.x >= TAMANHO || coord.y < 0 || coord.y >= TAMANHO) {
-        return 0;
+int ehPosicaoValida(char tabuleiro[TAMANHO][TAMANHO], Coordenada coord, int tamanho, int vertical) {
+    if (vertical) {
+        if (coord.x + tamanho > TAMANHO) return 0;
+        for (int i = 0; i < tamanho; i++) {
+            if (tabuleiro[coord.x + i][coord.y] != '~') return 0;
+        }
+    } else {
+        if (coord.y + tamanho > TAMANHO) return 0;
+        for (int i = 0; i < tamanho; i++) {
+            if (tabuleiro[coord.x][coord.y + i] != '~') return 0;
+        }
     }
-    return tabuleiro[coord.x][coord.y] == '~';
+    return 1;
+}
+
+void posicionarNavio(char tabuleiro[TAMANHO][TAMANHO], int tamanho) {
+    int posicionado = 0;
+    while (!posicionado) {
+        Coordenada coord;
+        int vertical;
+        printf("Digite as coordenadas para posicionar o navio de %d célula(s) (linha coluna) e 1 para vertical ou 0 para horizontal: ", tamanho);
+        scanf("%d %d %d", &coord.x, &coord.y, &vertical);
+        if (ehPosicaoValida(tabuleiro, coord, tamanho, vertical)) {
+            for (int i = 0; i < tamanho; i++) {
+                if (vertical) {
+                    tabuleiro[coord.x + i][coord.y] = 'N';
+                } else {
+                    tabuleiro[coord.x][coord.y + i] = 'N';
+                }
+            }
+            posicionado = 1;
+        } else {
+            printf("Posição inválida. Tente novamente.\n");
+        }
+    }
 }
 
 void posicionarNavios(char tabuleiro[TAMANHO][TAMANHO]) {
-    int naviosPosicionados = 0;
-    while (naviosPosicionados < NUM_NAVIOS) {
+    for (int i = 0; i < NAVIOS_1_CELULA; i++) {
+        posicionarNavio(tabuleiro, 1);
+    }
+    for (int i = 0; i < NAVIOS_2_CELULAS; i++) {
+        posicionarNavio(tabuleiro, 2);
+    }
+    posicionarNavio(tabuleiro, 3);
+}
+
+void posicionarNaviosComputador(char tabuleiro[TAMANHO][TAMANHO]) {
+    srand(time(NULL));
+    for (int i = 0; i < NAVIOS_1_CELULA; i++) {
+        int posicionado = 0;
+        while (!posicionado) {
+            Coordenada coord;
+            coord.x = rand() % TAMANHO;
+            coord.y = rand() % TAMANHO;
+            if (ehPosicaoValida(tabuleiro, coord, 1, 1)) {
+                tabuleiro[coord.x][coord.y] = 'N';
+                posicionado = 1;
+            }
+        }
+    }
+    for (int i = 0; i < NAVIOS_2_CELULAS; i++) {
+        int posicionado = 0;
+        while (!posicionado) {
+            Coordenada coord;
+            coord.x = rand() % TAMANHO;
+            coord.y = rand() % TAMANHO;
+            int vertical = rand() % 2;
+            if (ehPosicaoValida(tabuleiro, coord, 2, vertical)) {
+                for (int j = 0; j < 2; j++) {
+                    if (vertical) {
+                        tabuleiro[coord.x + j][coord.y] = 'N';
+                    } else {
+                        tabuleiro[coord.x][coord.y + j] = 'N';
+                    }
+                }
+                posicionado = 1;
+            }
+        }
+    }
+    int posicionado = 0;
+    while (!posicionado) {
         Coordenada coord;
-        printf("Digite as coordenadas para posicionar o navio %d (linha coluna): ", naviosPosicionados + 1);
-        scanf("%d %d", &coord.x, &coord.y);
-        if (ehPosicaoValida(tabuleiro, coord)) {
-            tabuleiro[coord.x][coord.y] = 'N';
-            naviosPosicionados++;
-        } else {
-            printf("Posição inválida. Tente novamente.\n");
+        coord.x = rand() % TAMANHO;
+        coord.y = rand() % TAMANHO;
+        int vertical = rand() % 2;
+        if (ehPosicaoValida(tabuleiro, coord, 3, vertical)) {
+            for (int j = 0; j < 3; j++) {
+                if (vertical) {
+                    tabuleiro[coord.x + j][coord.y] = 'N';
+                } else {
+                    tabuleiro[coord.x][coord.y + j] = 'N';
+                }
+            }
+            posicionado = 1;
         }
     }
 }
@@ -83,42 +162,55 @@ int todosNaviosAfundados(char tabuleiro[TAMANHO][TAMANHO]) {
 }
 
 void jogar() {
-    char tabuleiroJogador1[TAMANHO][TAMANHO];
-    char tabuleiroJogador2[TAMANHO][TAMANHO];
-    inicializarTabuleiro(tabuleiroJogador1);
-    inicializarTabuleiro(tabuleiroJogador2);
+    char tabuleiroJogador[TAMANHO][TAMANHO];
+    char tabuleiroComputador[TAMANHO][TAMANHO];
+    inicializarTabuleiro(tabuleiroJogador);
+    inicializarTabuleiro(tabuleiroComputador);
 
-    printf("Jogador 1, posicione seus navios:\n");
-    posicionarNavios(tabuleiroJogador1);
-    printf("Jogador 2, posicione seus navios:\n");
-    posicionarNavios(tabuleiroJogador2);
+    printf("Jogador, posicione seus navios:\n");
+    posicionarNavios(tabuleiroJogador);
+    printf("Computador está posicionando seus navios...\n");
+    posicionarNaviosComputador(tabuleiroComputador);
 
-    int jogadorAtual = 1;
+    int jogadorAtual = 1; // 1 para jogador, 2 para computador
     while (1) {
-        char (*tabuleiroAtual)[TAMANHO] = jogadorAtual == 1 ? tabuleiroJogador2 : tabuleiroJogador1;
-        printf("Turno do Jogador %d:\n", jogadorAtual);
-        imprimirTabuleiro(tabuleiroAtual, 0);
-
-        Coordenada disparo;
-        printf("Digite as coordenadas para atirar (linha coluna): ");
-        scanf("%d %d", &disparo.x, &disparo.y);
-
-        int resultado = realizarDisparo(tabuleiroAtual, disparo);
-        if (resultado == 1) {
-            printf("Acertou!\n");
-        } else if (resultado == 0) {
-            printf("Errou.\n");
+        if (jogadorAtual == 1) {
+            printf("Turno do Jogador:\n");
+            imprimirTabuleiro(tabuleiroComputador, 0);
+            Coordenada disparo;
+            printf("Digite as coordenadas para atirar (linha coluna): ");
+            scanf("%d %d", &disparo.x, &disparo.y);
+            int resultado = realizarDisparo(tabuleiroComputador, disparo);
+            if (resultado == 1) {
+                printf("Acertou!\n");
+            } else if (resultado == 0) {
+                printf("Errou.\n");
+            } else {
+                printf("Já atirou aqui. Tente novamente.\n");
+                continue;
+            }
+            if (todosNaviosAfundados(tabuleiroComputador)) {
+                printf("Jogador venceu!\n");
+                break;
+            }
+            jogadorAtual = 2;
         } else {
-            printf("Já atirou aqui. Tente novamente.\n");
-            continue;
+            printf("Turno do Computador:\n");
+            Coordenada disparo;
+            disparo.x = rand() % TAMANHO;
+            disparo.y = rand() % TAMANHO;
+            int resultado = realizarDisparo(tabuleiroJogador, disparo);
+            if (resultado == 1) {
+                printf("Computador acertou em (%d, %d)!\n", disparo.x, disparo.y);
+            } else if (resultado == 0) {
+                printf("Computador errou em (%d, %d).\n", disparo.x, disparo.y);
+            }
+            if (todosNaviosAfundados(tabuleiroJogador)) {
+                printf("Computador venceu!\n");
+                break;
+            }
+            jogadorAtual = 1;
         }
-
-        if (todosNaviosAfundados(tabuleiroAtual)) {
-            printf("Jogador %d venceu!\n", jogadorAtual);
-            break;
-        }
-
-        jogadorAtual = jogadorAtual == 1 ? 2 : 1;
     }
 }
 
