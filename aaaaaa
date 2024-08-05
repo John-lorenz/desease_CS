@@ -1,0 +1,50 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+int main() {
+    srand(time(0)); // Inicializa o gerador de números aleatórios
+
+    int escolhaUsuario;
+    int escolhaComputador = rand() % 3 + 1; // Gera um número aleatório entre 1 e 3
+
+    cout << "Vamos jogar Pedra (1), Papel (2), Tesoura (3)!" << endl;
+    cout << "Digite a sua escolha (1, 2 ou 3): ";
+    cin >> escolhaUsuario;
+
+    // Verifica a entrada do usuário
+    if (escolhaUsuario < 1 || escolhaUsuario > 3) {
+        cout << "Escolha inválida!" << endl;
+        return 1;
+    }
+
+    // Mostra as escolhas
+    cout << "Você escolheu: ";
+    switch (escolhaUsuario) {
+        case 1: cout << "Pedra" << endl; break;
+        case 2: cout << "Papel" << endl; break;
+        case 3: cout << "Tesoura" << endl; break;
+    }
+
+    cout << "O computador escolheu: ";
+    switch (escolhaComputador) {
+        case 1: cout << "Pedra" << endl; break;
+        case 2: cout << "Papel" << endl; break;
+        case 3: cout << "Tesoura" << endl; break;
+    }
+
+    // Determina o vencedor
+    if (escolhaUsuario == escolhaComputador) {
+        cout << "Empate!" << endl;
+    } else if ((escolhaUsuario == 1 && escolhaComputador == 3) ||
+               (escolhaUsuario == 2 && escolhaComputador == 1) ||
+               (escolhaUsuario == 3 && escolhaComputador == 2)) {
+        cout << "Você ganhou!" << endl;
+    } else {
+        cout << "O computador ganhou!" << endl;
+    }
+
+    return 0;
+}
